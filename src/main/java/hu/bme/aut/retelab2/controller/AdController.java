@@ -16,11 +16,6 @@ public class AdController {
 	@Autowired
 	AdRepository adRepository;
 
-	@GetMapping
-	public List<Ad> getAll() {
-
-		return adRepository.findAll();
-	}
 
 	@PostMapping
 	public Ad create(@RequestBody Ad ad) {
@@ -28,6 +23,14 @@ public class AdController {
 		log.trace(ad.getAddress());
 		ad.setId(null);
 		return adRepository.save(ad);
+	}
+
+	@GetMapping
+	public List<Ad> getBetweenPrice(@RequestParam(defaultValue = "0") int min, @RequestParam(defaultValue = "10000000") int max) {
+		return adRepository.findBetweenPrice(
+				min,
+				max
+		);
 	}
 
 }
