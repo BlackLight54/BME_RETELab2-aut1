@@ -1,10 +1,14 @@
 package hu.bme.aut.retelab2.controller;
 
+import hu.bme.aut.retelab2.SecretGenerator;
 import hu.bme.aut.retelab2.domain.Ad;
 import hu.bme.aut.retelab2.repository.AdRepository;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -19,18 +23,40 @@ public class AdController {
 
 	@PostMapping
 	public Ad create(@RequestBody Ad ad) {
-		log.trace("create ad");
-		log.trace(ad.getAddress());
 		ad.setId(null);
+		ad.setSecret(SecretGenerator.generate());
 		return adRepository.save(ad);
+	}
+
+	@PutMapping
+	public Ad update(@RequestBody Ad ad) {
+		try {
+			return adRepository.modify(ad);
+		} catch (NotFoundException e) {
+			log.error(
+					"Ad not found",
+					e
+			);
+			throw new ResponseStatusException(
+					HttpStatus.NOT_FOUND,
+					"Ad not found",
+					e
+			);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+			                                  e.getMessage(),
+			                                  e);
+		}
 	}
 
 	@GetMapping
 	public List<Ad> getBetweenPrice(@RequestParam(defaultValue = "0") int min, @RequestParam(defaultValue = "10000000") int max) {
-		return adRepository.findBetweenPrice(
+		List<Ad> ret = adRepository.findBetweenPrice(
 				min,
 				max
 		);
+		ret.forEach(ad -> ad.setSecret(null));
+		return ret;
 	}
 
 }

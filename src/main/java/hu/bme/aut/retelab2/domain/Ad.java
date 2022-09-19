@@ -30,4 +30,6 @@ public class Ad {
 		createdOn = LocalDateTime.now();
 	}
 
+
+	private String secret;
 }
