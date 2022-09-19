@@ -2,6 +2,7 @@ package hu.bme.aut.retelab2.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,7 +25,10 @@ public class Ad {
 	private LocalDateTime createdOn;
 
 	@PrePersist
-	private void fillCreationDate() {
+	private void fillCreationAndExpiryDate() {
+		if (expiryDate == null) {
+			expiryDate = LocalDateTime.now().plusSeconds(10);
+		}
 		createdOn = LocalDateTime.now();
 	}
 
@@ -33,4 +37,9 @@ public class Ad {
 
 	@ElementCollection
 	private List<String> tags;
+
+	@Nullable
+	private LocalDateTime expiryDate;
+
+
 }

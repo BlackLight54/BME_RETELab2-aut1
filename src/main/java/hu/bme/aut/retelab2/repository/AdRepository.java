@@ -3,15 +3,19 @@ package hu.bme.aut.retelab2.repository;
 import hu.bme.aut.retelab2.domain.Ad;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 @Slf4j
+@EnableScheduling
 public class AdRepository {
 
 	@PersistenceContext
@@ -78,6 +82,22 @@ public class AdRepository {
 						tag
 				)
 				.getResultList();
+	}
+
+	@Transactional
+	@Scheduled(fixedDelay = 6000)
+	public void deleteExpired() {
+		System.out.println("Deleting expired ads");
+		List<Ad> expiredAds = em.createQuery(
+				"SELECT a From Ad a where a.expiryDate < ?1",
+				Ad.class
+		).setParameter(
+				1,
+				LocalDateTime.now()
+		).getResultList();
+		for (Ad expiredAd : expiredAds) {
+			em.remove(expiredAd);
+		}
 	}
 
 
