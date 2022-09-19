@@ -59,4 +59,15 @@ public class AdController {
 		return ret;
 	}
 
+	@GetMapping("{tag}")
+	public List<Ad> getByTag(@PathVariable String tag) {
+		log.trace(
+				"getByTag: {}",
+				tag
+		);
+		List<Ad> ret = adRepository.findAllWithTag(tag);
+		ret.forEach(ad -> ad.setSecret(null));
+		return ret;
+	}
+
 }

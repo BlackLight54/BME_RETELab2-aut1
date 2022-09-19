@@ -2,6 +2,7 @@ package hu.bme.aut.retelab2.repository;
 
 import hu.bme.aut.retelab2.domain.Ad;
 import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +11,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
+@Slf4j
 public class AdRepository {
 
 	@PersistenceContext
@@ -64,4 +66,19 @@ public class AdRepository {
 				max
 		).getResultList();
 	}
+
+
+	public List<Ad> findAllWithTag(String tag) {
+		return em.createQuery(
+						"SELECT a FROM Ad a JOIN a.tags t WHERE LOWER(t) = LOWER(?1)",
+						Ad.class
+				)
+				.setParameter(
+						1,
+						tag
+				)
+				.getResultList();
+	}
+
+
 }

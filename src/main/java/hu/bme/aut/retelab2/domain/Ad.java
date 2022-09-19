@@ -3,11 +3,9 @@ package hu.bme.aut.retelab2.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,4 +30,7 @@ public class Ad {
 
 
 	private String secret;
+
+	@ElementCollection
+	private List<String> tags;
 }
